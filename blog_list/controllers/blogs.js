@@ -19,9 +19,10 @@ blogRouter.post('/', async (request, response) => {
     user: user._id
   })
   if (!body.likes) blog.likes = 0
-  const result = await blog.save()
-  user.blogs = user.blogs.concat(result._id)
+  const savedBlog = await blog.save()
+  user.blogs = user.blogs.concat(savedBlog._id)
   await user.save()
+  const result = await Blog.findById(savedBlog._id).populate('user', { userName: 1, name: 1 })
   response.status(201).json(result)
 })
 
@@ -45,7 +46,7 @@ blogRouter.put('/:id', async (request, response) => {
     request.params.id,
     { title, author, url, likes },
     { new: true, runValidators: true, context: 'query' }
-  )
+  ).populate('user', { userName: 1, name: 1 })
   response.json(updatedBlog)
 })
 
