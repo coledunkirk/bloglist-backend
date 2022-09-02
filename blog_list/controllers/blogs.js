@@ -1,5 +1,6 @@
 const blogRouter = require('express').Router();
 const Blog = require('../models/blog')
+const { v4: uuidv4 } = require('uuid')
 const User = require('../models/user')
 const jwt = require('jsonwebtoken')
 
@@ -16,7 +17,8 @@ blogRouter.post('/', async (request, response) => {
     author: body.author,
     url: body.url,
     likes: body.likes,
-    user: user._id
+    user: user._id,
+    comments: []
   })
   if (!body.likes) blog.likes = 0
   const savedBlog = await blog.save()
@@ -24,6 +26,20 @@ blogRouter.post('/', async (request, response) => {
   await user.save()
   const result = await Blog.findById(savedBlog._id).populate('user', { userName: 1, name: 1 })
   response.status(201).json(result)
+})
+
+blogRouter.post('/:id/comments', async (request, response) => {
+  const blog = await Blog.findById(request.params.id)
+  if (!blog.comments) blog.comments = []
+  const newComment = request.body.comment
+  const commentWithId = {
+    comment: newComment,
+    id: uuidv4()
+  }
+  blog.comments = blog.comments.concat(commentWithId)
+  const savedBlog = await blog.save()
+  const result = await Blog.findById(savedBlog._id).populate('user', { userName: 1, name: 1 })
+  response.json(result)
 })
 
 blogRouter.delete('/:id', async (request, response) => {

@@ -50,3 +50,10 @@ if (process.env.NODE_ENV === 'test') {
 app.use(middleware.unknownEndpoint)
 app.use(middleware.errorHandler)
 module.exports = app
+
+//create controller for creating new comments
+//add functionality to app in the backend
+//test using postman and db inspection
+//add service for fetching comments to the frontend
+//create a list for the comments on the individual blog page
+//run the app and test the new functionality
