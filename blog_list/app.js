@@ -4,6 +4,7 @@ require('express-async-errors')
 const app = express()
 const cors = require('cors')
 const morgan = require('morgan')
+const path = require('path')
 const blogRouter = require('./controllers/blogs')
 const usersRouter = require('./controllers/users')
 const loginRouter = require('./controllers/login')
@@ -47,13 +48,15 @@ if (process.env.NODE_ENV === 'test') {
   const testingRouter = require('./controllers/testing')
   app.use('/api/testing', testingRouter)
 }
+app.get('/*', function(req, res) {
+  res.sendFile(path.join(__dirname, './build/index.html'), function(err) {
+    if (err) {
+      res.status(500).send(err)
+    }
+  })
+})
 app.use(middleware.unknownEndpoint)
 app.use(middleware.errorHandler)
 module.exports = app
 
-//create controller for creating new comments
-//add functionality to app in the backend
-//test using postman and db inspection
-//add service for fetching comments to the frontend
-//create a list for the comments on the individual blog page
-//run the app and test the new functionality
+
